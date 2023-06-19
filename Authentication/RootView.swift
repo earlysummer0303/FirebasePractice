@@ -19,11 +19,11 @@ struct RootView: View {
         .onAppear{
             let authUser = try?  AuthenticationManager.shared.getAutenticatedUser()
             // authUser가 없을 경우, SignInView가 나오도록
-            self.showSignInView = authUser == nil ? true : false
+            self.showSignInView = authUser == nil 
         }
         .fullScreenCover(isPresented: $showSignInView){
             NavigationStack{
-                AuthenticationView()
+                AuthenticationView(showSignInView: $showSignInView)
             }
         }
 

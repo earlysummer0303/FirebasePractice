@@ -42,6 +42,16 @@ final class AuthenticationManager {
         return result
     }
     
+    //signIn User - 로그인
+    // 이 프로젝트에서는 동일한 계정을 두번째 이상으로 입력했을때 Sign in으로 간주.
+    @discardableResult
+    func signInUser(email: String, password: String) async throws -> AuthDataResultModel {
+        let authDataResult = try await Auth.auth().signIn(withEmail: email, password: password)
+        let result = AuthDataResultModel(user: authDataResult.user)
+        
+        return result
+    }
+    
     // getAutenticatedUser => 이미 저장된 유저정보를 가지고 오는것.
     
     func getAutenticatedUser() throws -> AuthDataResultModel {
@@ -59,10 +69,26 @@ final class AuthenticationManager {
        try Auth.auth().signOut()
     }
     
-    //signIn User - 로그인
-    // 이 프로젝트에서는 동일한 계정을 두번째 이상으로 입력했을때 Sign in으로 간주.
-   // @discardableResult
-//    func signInUser(email: String, password: String) async throws -> AuthDataResultModel{
-//        
-//    }
+    func resetPassword(email: String) async throws {
+        try await Auth.auth().sendPasswordReset(withEmail: email)
+    }
+    
+    //update
+    
+    func updatePassword(password: String) async throws {
+        guard let user = Auth.auth().currentUser else { // Optional Binding
+            // 유저 정보를 받아 올 수 없다면.
+            throw URLError(.badServerResponse)
+        }
+        try await user.updatePassword(to: password)
+    }
+    
+    func updateEmail(email: String) async throws {
+        guard let user = Auth.auth().currentUser else { // Optional Binding
+            // 유저 정보를 받아 올 수 없다면.
+            throw URLError(.badServerResponse)
+        }
+        try await user.updateEmail(to: email)
+    }
+    
 }
